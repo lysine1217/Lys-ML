@@ -19,7 +19,7 @@ def dsigmoid(x):
 
 
 class NeuralNetwork:
-    def __init__(self, ni, nh, no):
+    def __init__(self, ni, nh, no, div=100.0):
         
         # number of input, hidden and output
         self.ni = ni+1
@@ -33,8 +33,8 @@ class NeuralNetwork:
         self.vo = np.zeros(self.no)
         
         # weight between (input, hidden) and (hidden, output)
-        self.wi = (np.random.random((self.ni,self.nh))*2.0-1.0)/100.0
-        self.wh = (np.random.random((self.nh,self.no))*2.0-1.0)/100.0
+        self.wi = (np.random.random((self.ni,self.nh))*2.0-1.0)/div
+        self.wh = (np.random.random((self.nh,self.no))*2.0-1.0)/div
 
         # plus minus random
         

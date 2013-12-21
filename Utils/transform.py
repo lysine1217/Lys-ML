@@ -89,10 +89,10 @@ class Transform():
             if(ins[0] == "E"):
                 
                 # normal explanatory variable
-                if(len(ins)==1 or ins[1]=="R"):
+                if(len(ins)==1 or ins[1]=="R" or ins[1]=="A"):
 
-                    # set range
-                    if(len(ins)>1):
+                    # set specified range
+                    if(ins[1]=="R"):
                         vlst = vlst.astype(np.float)
                         min_e, max_e = ins[3:-1].split(",")
                         
@@ -101,6 +101,14 @@ class Transform():
 
                         for j, v in enumerate(vlst):
                             vlst[j] = (v-min_e)*1.0/(max_e-min_e)
+
+                    # automatic range
+                    if(ins[1]=="A"):
+                        min_e = np.min(vlst)
+                        max_e = np.max(vlst)
+
+                        for j,v in enumerate(vlst):
+                            vlst[j] = (v-min_e)*0.95/(max_e-min_e)
 
                     if(len(self.elst)==0):
                         self.elst = np.array([vlst])
@@ -125,10 +133,34 @@ class Transform():
                     else:
                         self.elst = np.append(self.elst, flst, axis=0)
 
+
+
             # target variable
             if(ins[0]=="T"):
                 
-                if(len(ins)==1):
+                if(len(ins)==1 or ins[1]=="R" or ins[1]=="A"):
+
+                    # TR(min, max)
+                    if(len(ins)>1 and ins[1]=="R"):
+                        vlst = vlst.astype(np.float)
+                        min_t, max_t = ins[3:-1].split(",")
+
+                        min_t = float(min_t)
+                        max_t = float(max_t)
+
+                        for j, v in enumerate(vlst):
+                            vlst[j] = (v-min_t)*1.0/(max_t-min_t)
+
+                    # TA automatic range
+                    if(len(ins)>1 and ins[1]=="A"):
+                        vlst = vlst.astype(np.float)
+                        min_t = np.min(vlst)
+                        max_t = np.max(vlst)
+
+                        for j, v in enumerate(vlst):
+                            vlst[j] = (v-min_t)*0.95/(max_t-min_t)
+
+
                     if(len(self.tlst)==0):
                         self.tlst = np.array([vlst])
                     else:
