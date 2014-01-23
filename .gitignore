@@ -1,0 +1,6 @@
+#directories
+Tmp/
+
+#files
+*~
+*.pyc
