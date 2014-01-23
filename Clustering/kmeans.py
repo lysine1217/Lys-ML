@@ -22,6 +22,9 @@ class KMeans:
         self.nd   = [0]*self.n
         self.kc   = []
 
+        self.err  = 0.0
+        self.perr = 0.0
+
         if k != None:
             self.k = k
 
@@ -67,13 +70,21 @@ class KMeans:
 
         
             # calc error
-            error = 0.0
+            self.err = 0.0
 
             for i in xrange(self.n):
-                error += np.linalg.norm(self.lst[i]-self.kc[self.nd[i]])
+                self.err += np.linalg.norm(self.lst[i]-self.kc[self.nd[i]])
 
-            print "error %.6lf" %error
-        
+            print "error %.6lf" %self.err
+
+            # check convergence
+            
+            if np.abs(self.err - self.perr) < 0.0001:
+                print "Convergence"
+                break
+            else:
+                self.perr = self.err
+
 
     def predict(self, lst):
 
@@ -95,14 +106,13 @@ class KMeans:
 
     def demoForKmeans(self):
 
-        
         # randomly genrate two group for demo
         lst = []
-        for i in xrange(10):
+        for i in xrange(100):
             lst.append(np.random.normal(0,1,2))
 
-        for i in xrange(10):
-            lst.append(np.random.normal(5,1,2))
+        for i in xrange(100):
+            lst.append(np.random.normal(3,1,2))
 
         np.random.shuffle(lst)
         self.setdata(lst, 2)
@@ -110,8 +120,24 @@ class KMeans:
         # train for the list
         self.train(100)
 
-        
-                    
+        # display points from matplotlib
 
+        import matplotlib.pylab as pylab
 
-        
+        xlst = self.lst.T[0]
+        ylst = self.lst.T[1]
+
+        for i in xrange(len(xlst)):
+            x = xlst[i]
+            y = ylst[i]
+
+            if self.nd[i]==0:
+                pylab.scatter(x,y,color="blue")
+            else:
+                pylab.scatter(x,y,color="green")
+
+    
+        for i in xrange(2):
+            pylab.scatter(self.kc[i][0], self.kc[i][1], s=30, color="red",marker="v")
+
+            
