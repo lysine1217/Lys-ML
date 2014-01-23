@@ -5,6 +5,7 @@
 #  Description:
 #   
 #   First Order Markov Model
+#   Impelementation is not finished yet
 #
 
 import numpy as np
@@ -14,7 +15,7 @@ class CRF:
 
     # features should be set into following format
     # features = [ [("L-0", "word1"), ("L-1","word2"), ("W-2", "word3"), ("W+3", "word4") ] //feature 1
-    # L-0 means labels for the current plac, W+3 means word that is three in front
+    # L-0 means labels for the current place, W+3 means word whose index equals current index + 3
  
     def __init__(self, labels, features=[]):
 
@@ -106,4 +107,3 @@ class CRF:
                 # second part
                 n_w[i] += np.sum([self.sum_feature_count(feature, data) for data in dataset])
         
-            self.w = 
