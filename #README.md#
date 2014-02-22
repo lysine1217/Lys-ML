@@ -3,14 +3,16 @@ lyspy
 
 ##Description:
 
-This library is a collection of some implementations about machine learning and natural language processing during the process I study about these fields.
+This library is a collection of some implementations about machine learning and natural language processing during the process I study related fields.
 
 
 ##Contents:
 
+### machine learning
+
 classfy algorithms
 - fisher classifier (linear discriminative analysis)
-- native bayes classfier 
+- naive bayes classfier 
 
 cluster algorithms
 - kmeans
@@ -31,6 +33,15 @@ regression algorithms
 - logistic regression
 
 statistics
+- mcmc
+
+Build bigram posting list for a specific dictionary(wordlist)
+#  For each query, construct the conjunction of posting list using its bigram
+#  Delete the possible word in the conjuction list if its jaccard coefficient is small
+#  Calculate the edit distance to find the most likely word
+#
+#
+
 
 
 
