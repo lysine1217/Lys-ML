@@ -24,6 +24,7 @@ graphical models
 nonlinear models
 - support vector machine
 - neural network
+- stack denoised autoencoder
 
 reduction algorithms
 - principal component analysis
