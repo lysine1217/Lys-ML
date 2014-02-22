@@ -1,12 +1,12 @@
 lyspy
 ======
 
-##Description:
+##Description
 
 This library is a collection of some implementations about machine learning and natural language processing during the process I am studying related fields. 
 
 
-##Main Contents:
+##Main Contents
 
 ### machine learning
 
@@ -18,12 +18,13 @@ cluster algorithms
 - kmeans
 
 graphical models
--conditional random field(under construction)
--hidden markov model
+- conditional random field(under construction)
+- hidden markov model
 
 nonlinear models
--support vector machine
--neural network
+- support vector machine
+- neural network
+- 
 
 reduction algorithms
 - principal component analysis
@@ -38,7 +39,7 @@ statistics
 ### natural language processing
 
 lexical
--spell checker
+- spell checker
 
 syntactic
 
