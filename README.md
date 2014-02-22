@@ -24,7 +24,6 @@ graphical models
 nonlinear models
 - support vector machine
 - neural network
-- 
 
 reduction algorithms
 - principal component analysis
