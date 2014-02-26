@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #-*- coding: utf-8 -*-
 #
-#Define vocabulary and stopwords for LDA
+# Define vocabulary and stopwords for LDA
 #
 
 import numpy as np
@@ -34,13 +34,13 @@ class Vocabulary:
         else:
             return False
 
-    def process_documents(self, docs):
-
-        """
-        Count words in documents 
-        and sort them to index the top frequent v words
         
-        """
+    # param cap : ignore the captalization when cap = 0
+    #
+    # This func counts words in the documents
+    # and set the most frequent v words into indexes
+
+    def process_documents(self, docs, cap=0):
 
         for doc in docs:
             for wd in doc:
@@ -60,7 +60,17 @@ class Vocabulary:
         for i, wd in enumerate(self.frq_words):
             self.dic_words[wd] = i
 
-    def read_nonstopwords(self, nonstopwords):
+
+    def read_nonstopwords(self, nonstopwords=None):
+
+        # read nonstop words from data dir 
+        # if nonstopwords does not exist
+
+        if nonstopwords == None:
+            nw = file("../data/en/top1000_nostop.txt").readlines()
+            nonstopwords = map(str.strip, nw)
+            self.v = len(nonstopwords)
+
         
         self.frq_words = nonstopwords
         if len(self.frq_words) > self.v:
@@ -70,6 +80,15 @@ class Vocabulary:
             if wd not in self.dic_words:
                 self.dic_words[wd] = i
 
+
+    def print_top_words(self, v=None):
+
+        if v == None:
+            v = self.v
+
+        for i in xrange(v):
+            print self.frq_words[i]
+        
 
     def transform_documents(self, docs):
         
