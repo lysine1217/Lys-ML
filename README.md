@@ -15,6 +15,7 @@ classfy algorithms
 - naive bayes classfier 
 
 cluster algorithms
+- gaussian mixture model
 - kmeans
 
 graphical models
