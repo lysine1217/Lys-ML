@@ -40,12 +40,21 @@ statistics
 ### natural language processing
 
 lexical
+- tokenizer
 - spell checker
 
 syntactic
 
 semantic
 - latent dirichlet allocation
+
+
+### Utilities
+
+structure
+- trie
+- leaf
+- tree
 
 
 
