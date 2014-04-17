@@ -36,6 +36,7 @@ regression algorithms
 
 statistics
 - mcmc
+- kendall correlation
 
 ### natural language processing
 
@@ -49,7 +50,7 @@ semantic
 - latent dirichlet allocation
 
 
-### Utilities
+### utilities
 
 structure
 - trie
