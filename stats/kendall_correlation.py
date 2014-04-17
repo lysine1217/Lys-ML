@@ -21,6 +21,8 @@ def demoKendall():
 def Kendall(x,y=None):
 
     cnt = len(x)
+    coeff = 0.0
+
 
     if y == None:
         y = range(1,cnt+1)
