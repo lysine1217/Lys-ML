@@ -34,6 +34,7 @@ reduction algorithms
 regression algorithms
 - linear regression
 - logistic regression
+- kernel regression
 
 sample
 - simple sampler
