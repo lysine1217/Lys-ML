@@ -38,6 +38,9 @@ statistics
 - mcmc
 - kendall correlation
 
+test
+- cross validation
+
 ### natural language processing
 
 lexical
