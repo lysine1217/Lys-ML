@@ -1,26 +1,24 @@
-# Backpropagation Neural Network
-# 
-#
-#
-#
+# -*- coding: utf-8 -*-
+
+"""
+Neural Network
+"""
+
 
 import numpy as np
 import string
 import sys
 
-np.random.seed(1)
-
-
-def sigmoid(x):
-    return np.tanh(x)
-
-def dsigmoid(x):
-    return 1.0 - x*x
-
+from lyspy.math.nonlinear_functions import *
 
 class NeuralNetwork:
+
+    """
+    Neural Network
+    """
+    
     def __init__(self, ni, nh, no, div=100.0):
-        
+
         # number of input, hidden and output
         self.ni = ni+1
         self.nh = nh
@@ -31,14 +29,13 @@ class NeuralNetwork:
         self.vh = np.zeros(self.nh) # hidden value of linear sum
         self.vz = np.zeros(self.nh) # hidden value after activation
         self.vo = np.zeros(self.no)
-        
+
+        # set seed for reproduction
+        np.random.seed(1)
+
         # weight between (input, hidden) and (hidden, output)
         self.wi = (np.random.random((self.ni,self.nh))*2.0-1.0)/div
         self.wh = (np.random.random((self.nh,self.no))*2.0-1.0)/div
-
-        # plus minus random
-        
-
 
         # difference for wi and wh
         self.di = np.zeros((self.ni,self.nh))
