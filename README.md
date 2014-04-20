@@ -4,6 +4,7 @@ lyspy
 ##Description
 
 This library is a collection of some implementations about machine learning and natural language processing during the process I am studying related fields. 
+Some implemetations are just prototypes.
 
 
 ##Main Contents
@@ -19,7 +20,7 @@ cluster algorithms
 - kmeans
 
 graphical models
-- conditional random field(under construction)
+- conditional random field
 - hidden markov model
 
 nonlinear models
@@ -33,6 +34,9 @@ reduction algorithms
 regression algorithms
 - linear regression
 - logistic regression
+
+sample
+- simple sampler
 
 statistics
 - mcmc
@@ -60,6 +64,14 @@ structure
 - trie
 - leaf
 - tree
+
+util
+- transformation
+
+math
+- kernel functions
+- random functions
+- nonliear functions
 
 
 
