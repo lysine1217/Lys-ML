@@ -46,6 +46,7 @@ test
 lexical
 - tokenizer
 - spell checker
+- language model
 
 syntactic
 
