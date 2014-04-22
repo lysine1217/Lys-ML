@@ -37,10 +37,12 @@ regression algorithms
 - kernel regression
 
 sample
-- simple sampler
+- target sampler
+- uniform sampler
+- gibbs sampler
+- metropolic sampler
 
 statistics
-- mcmc
 - kendall correlation
 
 test
@@ -65,6 +67,7 @@ structure
 - trie
 - leaf
 - tree
+- sentence
 
 util
 - transformation
