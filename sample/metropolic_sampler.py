@@ -1,4 +1,8 @@
+# -*- coding: utf-8 -*-
+
 '''
+Metropolic Sampler
+
 This program is based on the first chapter of computational statistics 2
 
 Sampling from the following distribution
@@ -9,11 +13,11 @@ P(x1,x2,x3) = exp(theta*x1*x2 + theta*x2*x3 + theta*x1*x3)/Z
 import sys
 import numpy as np
 
-def f(theta,y):
-    return np.exp(theta*y[0]*y[1]+theta*y[1]*y[2]+theta*y[2]*y[0])
-    
+def metropolic_sampler():
 
-if __name__ == "__main__":
+    def f(theta,y):
+        return np.exp(theta*y[0]*y[1]+theta*y[1]*y[2]+theta*y[2]*y[0])
+    
     x   = [1]*3
     cnt = [0]*8
     mean = 0.0
@@ -42,10 +46,5 @@ if __name__ == "__main__":
 
     for i in xrange(8):
         print i," : ",cnt[i]
-        
-        
-
-        
-        
     
 
