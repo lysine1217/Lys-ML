@@ -1,24 +1,55 @@
-#!/usr/bin/python
 #-*- coding: utf-8 -*-
-#
-# Define vocabulary and stopwords for LDA
-#
+
+"""
+Vocabulary
+"""
+
+from collections import defaultdict
 
 import numpy as np
 
+
 class Vocabulary:
 
-    def __init__(self, v, stopwords=[]):
-        self.v = v
-        self.lst_stopwords = stopwords
-        self.dic_stopwords = dict()
-        self.cnt_words     = dict()
-        
-        self.frq_words    = []
-        self.dic_words     = dict()
+    """
+    Vocabulary is a data structure to save the basic word level information.
+    It can used to process sentences to transform them into integers or vectors
 
-        for wd in self.lst_stopwords:
-            self.dic_stopwords[wd] = 1
+    """    
+
+    def __init__(self, v=None, stopwords=None):
+
+        """
+        Set vocabularies
+        """
+
+        self.word2dex = dict()
+        self.dex2word = dict()
+
+        if v!= None:
+            self.set_vocabulary(v)
+
+        """
+        Set stopwords
+
+        """
+        self.is_stopword = dict()
+        
+        if stopwords != None:
+            self.set_stopword(stopwords)
+
+
+        """
+        Optional Word Information
+
+        - cnt: counts for each word ( may be used in tfidf )
+        - word2vec: word vectors ( may be used in semantic composition )
+
+        """
+
+        self.cnt = defaultdict(int)
+        self.word2vec = dict()
+        
 
     def __getitem__(self, sth):
         if isinstance(sth, str) :
@@ -33,6 +64,27 @@ class Vocabulary:
                 return False
         else:
             return False
+
+
+    def set_vocabulary(self, v):
+
+        if isinstance(v, list):
+            for i, w in enumerate(v):
+                self.word2dex[w] = i
+                self.dex2word[i] = w
+
+        if isinstance(v, dict):
+            for i, w in enumerate(v.keys()):
+                self.word2dex[w] = i
+                self.dex2word[i] = w
+            
+
+    def set_stopwords(self, stopwords):
+        for word in stopwords:
+            self.is_stopword[word] = True
+
+
+    def set_vectors(self, vectors=None):
 
         
     # param cap : ignore the captalization when cap = 0
