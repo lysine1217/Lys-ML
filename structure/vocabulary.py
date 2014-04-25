@@ -44,6 +44,10 @@ class Vocabulary:
 
         for doc in docs:
             for wd in doc:
+
+                if cap == 0:
+                    wd = wd.lower()
+
                 if wd in self.dic_stopwords:
                     continue
                 if wd in self.cnt_words:
