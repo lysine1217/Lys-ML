@@ -1,71 +1,65 @@
-# Linear Model
-# 
-# usage : python ./lm.py <file> <train dim> <iterations>
-#
+# -*- coding: utf-8 -*-
 
-import sys
+"""
+Linear Regression
+
+"""
+
 import numpy as np
 
-from loader import *
+from lyspy.learn.dataset import DataSet
+from lyspy.learn.test import Test
 
-class LinearModel:
 
-    def __init__(self, train_file, train_dim=1):
+class LinearRegression:
 
-        self.train_file = train_file
-        self.train_dim  = train_dim + 1 #intercept
+    def __init__(self, ni, no=1):
 
-        self.train_set  = SupervisedDataSet(train_file,train_dim).data
-        self.res        = np.zeros(len(self.train_set[0][1]))
+        """
+        ni: input dimension
+        no: output dimension
+        """
 
-        self.weight     = np.random.random(self.train_dim)
-        self.dweight    = np.zeros(self.train_dim)
+        self.ni = ni
+        self.no = no
 
-        for i in xrange(len(self.train_set)):
-            self.train_set[i][0] = np.append(self.train_set[i][0],[1.0])
+        self.wi  = np.random.random(self.ni)
+        self.dwi = np.zeros(self.ni)
+
+    def calculate(self, v):
+        return np.dot(v, self.wi)
+
+    def train(self, dataset, epoch=1000, rate=0.05):
         
-    def gradientDescent(self, iterations=1000, rate=0.05):
+        """
+        dataset should be an instance of supervised DataSet
         
-        for i in xrange(iterations):
+        """
+
+        for i in xrange(epoch):
             error = 0.0
 
             for j in xrange(1000):
-            
-                dex = int(np.random.random()*len(self.train_set))
-                pattern = self.train_set[dex][0]
-                target  = self.train_set[dex][1][0]
+                dex = np.random.randint(0, len(dataset))
+
+                v = dataset.variable[dex]
+                t = dataset.target[dex]
+
+                r = self.calculate(v)
+                error += (r-t)**2
                 
-                # update
-                self.res = sum(pattern*self.weight)
-                error    = error + (self.res - target)**2
-                
-                # renewal
-                self.dweight = (self.res-target)*pattern
-                self.weight  = self.weight - rate * self.dweight
+                self.dwi = (r-t)*v
+                self.wi  = self.wi - rate*self.dwi
+
+            print i," epoch error %.6f" % error
+
+    def predict(self, dataset):
         
-            print('error %-.8f' %error)
-            print self.weight
+        res = []
+        
+        for i in xrange(len(dataset)):
+            v = dataset.variable[i]
+            r = self.calculate(v)
+            res.append(r)
 
-
-
-
-
-if __name__ == "__main__":
-
-    argv = sys.argv
-    if(len(argv)<=3):
-        raise IOError("The number of arguments is not appropriate")
-
-    train_file = argv[1]
-    train_dim  = argv[2]
-
-    lm = LinearModel(train_file,(int)(train_dim))
-    lm.gradientDescent(int(argv[3]))
-
-    
-
-
-
-
-
-
+        return np.array(res)
