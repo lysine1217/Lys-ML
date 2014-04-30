@@ -1,10 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+from pandas import DataFrame, Series
 
+from .dataset import DataSet
 from .error_model import *
 
-class Validate:
+"""
+Test is a class to test supervised training
+It summarize results predicts by models and DataSet's target
+
+"""
+
+
+class Test:
 
     def __init__(self, model=None, dataset=None, error_func=square_errors):
 
