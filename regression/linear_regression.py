@@ -6,9 +6,10 @@
 import sys
 import numpy as np
 
-from loader import *
+from lyspy.learn.dataset import DataSet
+from lyspy.learn.test
 
-class LinearModel:
+class LinearRegression:
 
     def __init__(self, train_file, train_dim=1):
 
