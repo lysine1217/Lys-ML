@@ -17,7 +17,7 @@ from pandas import DataFrame, Series
 # learn
 
 from lyspy.learn.dataset import DataSet
-from lyspy.learn.dataset import Test
+from lyspy.learn.test import Test
 
 # structure
 

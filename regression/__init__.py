@@ -1,4 +1,4 @@
-from .logistic import LogisticRegression as lg
+from .logistic_regression import LogisticRegression
 
 
 
