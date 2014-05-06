@@ -16,6 +16,30 @@ def read_dataset_csv(dataset_file):
     return DataSet(pd.read_csv(dataset_file))
 
 
+def read_supervised_list(dataset_list):
+    """
+    pass plain list to DataSet
+    each element of list should be [[input], [target]]
+    """
+
+    # normalize them first
+    nlst = []
+    for p, q in dataset_list:
+        nelem = p + q
+        nlst.append(nelem)
+
+    # create dataset and columns
+    ds = DataSet(nlst)
+
+    input_cnt = len(dataset_list[0][0])
+    all_cnt = input_cnt + len(dataset_list[0][1])
+    target_columns = [i for i in xrange(input_cnt, all_cnt)]
+    
+    ds.set_target(target_columns)
+
+    return ds
+
+
 class DataSet:
 
     """
@@ -31,8 +55,8 @@ class DataSet:
 
         """
         Parameter description
-        dataset is raw panda dataset
-        variable and target will both be a numpy array
+        dataset is raw panda DataFrame or plain list which can be interpreted by DataFrame
+        input and target will both be a numpy array
         targets should be set when dataset is used in supervised training by set_target
         """
         
