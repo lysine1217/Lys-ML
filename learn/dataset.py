@@ -164,7 +164,7 @@ class DataSet:
         return self.input[i]
 
 
-    def set_target(self, dex, setVar=True):
+    def set_target(self, dex, setinput=True):
         """
         set target by index from self.dataset
         This automaticly set input variables that are not contained in target
@@ -175,7 +175,7 @@ class DataSet:
         else:
             self.tlst = [dex]
 
-        if setVar == True:
+        if setinput == True:
             self.ilst = [x for x in self.vlst if x not in self.tlst]
 
         self.target_dataset = self.dataset[self.tlst]
@@ -332,6 +332,77 @@ class DataSet:
 
 
         
+    def shuffle_cases(self):
+        self.dataset = self.dataset.reindex(np.random.permutation(self.dataset.index))
+
+        # reset input and target
+        self.input_dataset  = self.dataset[self.ilst]
+        self.target_dataset = self.dataset[self.tlst]
+
+        self.input  = self.input_dataset.values
+        self.target = self.target_dataset.values
+
+    def split(self, prop=[0.8, 0.2, 0.0], shuffle=True):
+
+        """
+        Split data into three(two) parts
+    
+        Training dataset ( default 80% )
+        Validate dataset ( default 20% )
+        Test dataset( default 0% )
+
+        """
+
+        # shuffle all cases
+        if shuffle:
+            self.shuffle_cases()
+
+
+        # split all dataset into three cases
+
+        train_threshold    = prop[0]
+        validate_threshold = prop[0] + prop[1]
+        test_threshold     = prop[0] + prop[1] + prop[2]
+
+
+        train_lst    = []
+        validate_lst = []
+        test_lst     = []
+
+
+        if shuffle:
+            self.shuffle_cases()
+
+        for i in xrange(len(self.dataset)):
+            r = np.random.random()
+            if r < train_threshold:
+                train_lst.append(i)
+            elif r < validate_threshold:
+                validate_lst.append(i)
+            else:
+                test_lst.append(i)
+
+
+        # create DataSet respectively
+
+        train_dataset      = DataSet(self.dataset.ix[train_lst])
+        validate_dataset   = DataSet(self.dataset.ix[validate_lst])
+        test_dataset       = DataSet(self.dataset.ix[test_lst])
+
+        # set target and variables for three dataset
+
+        train_dataset.set_input(self.ilst)
+        validate_dataset.set_input(self.ilst)
+        test_dataset.set_input(self.ilst)
+
+        train_dataset.set_target(self.tlst)
+        validate_dataset.set_target(self.tlst)
+        test_dataset.set_target(self.tlst)
+
+        return train_dataset, validate_dataset, test_dataset
+
+
+
     def to_list(self):
         """
         transform dataset into plain list
