@@ -10,6 +10,8 @@ import string
 import sys
 
 from lyspy.math.nonlinear_functions import *
+from lyspy.learn.dataset import *
+from lyspy.learn.test import *
 
 class NeuralNetwork:
 
@@ -20,7 +22,7 @@ class NeuralNetwork:
     def __init__(self, ni, nh, no, div=100.0):
 
         # number of input, hidden and output
-        self.ni = ni+1
+        self.ni = ni
         self.nh = nh
         self.no = no
 
@@ -56,12 +58,9 @@ class NeuralNetwork:
 
 
     def update(self, inputs):
-        
-        if(len(inputs)!=self.ni-1):
-            raise ValueError("Length for inputs is not proper")
-        
+                
         # forward calculation for each layer
-        self.vi = np.append(inputs,[0.0])
+        self.vi = inputs
         self.vh = np.dot(self.vi,self.wi)
         self.vz = sigmoid(self.vh)
         self.vo = np.dot(self.vz,self.wh)
@@ -129,7 +128,7 @@ class NeuralNetwork:
         print cnt1,cnt2
 
 
-    def calc(self, patterns):
+    def calculate(self, patterns):
         ret = []
 
         for p in patterns:
@@ -146,13 +145,16 @@ class NeuralNetwork:
         print "Hidden Weights"
         print wh
 
-    def train(self, patterns, iterations=1000, rate=0.05, momentum=0.01):
-        for i in xrange(iterations):
+    def train(self, dataset, epoch=1000, rate=0.05, momentum=0.01):
+
+        for i in xrange(epoch):
 
             error = 0.0
-            for p in patterns:
-                inputs  = p[0]
-                targets = p[1]
+
+            for j in xrange(1000):
+                dex = np.random.randint(0, len(dataset))
+                inputs  = dataset.input[dex]
+                targets = dataset.target[dex]
                 self.update(inputs)
                 self.backPropagate(targets, rate, momentum)
                 error = error + self.so
@@ -160,8 +162,8 @@ class NeuralNetwork:
             if error < 0.00001 :
                 print "Converge !"
 
-            if i%100 == 0:
-                print('error %-.5f' %error)
+            print i," epoch error %.6f" % error
+
     
     def stochasticGradientDescent(self, patterns, iterations=1000, rate=0.05,momentum=0.01):
         for i in xrange(iterations):
@@ -181,6 +183,16 @@ class NeuralNetwork:
             if i%10 == 0:
                 print('error %-.5f' %error)
 
+
+
+    def predict(self, dataset, binary=0):
+
+        res = []
+        for i in xrange(len(dataset)):
+            self.update(dataset.input[i])
+            res.append(self.vo)
+
+        return np.array(res)
 
 
 def demo():
@@ -246,7 +258,7 @@ def main(argv):
             testPat.append(nline)
             #testPat.append([nline[:-1],[nline[-1]]])
 
-        n.calc(testPat)
+        n.calculate(testPat)
 
 
 if __name__ == '__main__':
