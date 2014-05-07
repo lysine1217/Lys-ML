@@ -68,9 +68,6 @@ class NeuralNetwork:
 
     def backPropagate(self, targets, rate, momentum):
         
-        if(len(targets)!=self.no):
-            raise ValueError("Length for outputs is not proper")
-
         # calc errors for output layer
         self.eo = self.vo - targets
         self.so = np.sum([er*er for er in self.eo])
@@ -161,6 +158,7 @@ class NeuralNetwork:
 
             if error < 0.00001 :
                 print "Converge !"
+                break
 
             print i," epoch error %.6f" % error
 
