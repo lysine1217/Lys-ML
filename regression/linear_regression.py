@@ -42,7 +42,7 @@ class LinearRegression:
             for j in xrange(1000):
                 dex = np.random.randint(0, len(dataset))
 
-                v = dataset.variable[dex]
+                v = dataset.input[dex]
                 t = dataset.target[dex]
 
                 r = self.calculate(v)
@@ -58,7 +58,7 @@ class LinearRegression:
         res = []
         
         for i in xrange(len(dataset)):
-            v = dataset.variable[i]
+            v = dataset.input[i]
             r = self.calculate(v)
             res.append(r)
 
