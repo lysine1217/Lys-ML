@@ -65,10 +65,11 @@ class LogisticRegression:
             for j in xrange(1000):
                 dex = np.random.randint(0, len(dataset))
                 
-                v = dataset.variable[dex]
+                v = dataset.input[dex]
                 t = dataset.target[dex]
 
                 r = self.calculate(v)
+                self.wi -= rate*(t-r)*v
                 error += (r-v)**2
         
             print error
@@ -97,7 +98,7 @@ class LogisticRegression:
     def predict(self, dataset, binary=1, offset=0.5):
         res = []
         for i in xrange(len(dataset)):
-            x = dataset.variable[i]
+            x = dataset.input[i]
             r = self.calculate(x)
             if binary==1:
                 if r > offset:

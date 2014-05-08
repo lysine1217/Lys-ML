@@ -119,6 +119,22 @@ class Vocabulary:
         f = map(str.strip(), open(filepath, "r").readlines())
         self.set_vocabulary(f)
 
+    def find_nearest_word(self, val):
+        """
+        return the word that has the nearest vector with "val"
+        """
+
+        min_word     = ""
+        min_distance = 100000000.0
+
+        for word, vec in self.word2vec.items():
+            distance = np.linalg.norm(vec-val)
+            if distance < min_distance:
+                min_word = word
+                min_distance = distance
+
+        return min_word
+
 
         
     def process(self, doc, cap=0):

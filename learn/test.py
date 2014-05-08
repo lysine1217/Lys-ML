@@ -3,8 +3,8 @@
 import numpy as np
 from pandas import DataFrame, Series
 
-from .dataset import DataSet
-from .error_model import *
+from lyspy.learn.dataset import DataSet
+from lyspy.learn.error_model import *
 
 """
 Test is a class to test supervised training
@@ -19,8 +19,8 @@ class Test:
 
         self.model      = model
         self.dataset    = dataset
-        self.variables  = self.dataset.variables
-        self.targets    = self.dataset.targets
+        self.input      = self.dataset.input
+        self.target     = self.dataset.target
         
         self.error_func = error_func
 
@@ -30,9 +30,24 @@ class Test:
 
     def test(self):
 
-        self.results = self.model.predict(self.variables)
-        self.sum_error   = self.error_func(self.resuls, self.targets)
+        self.result      = self.model.predict(self.dataset)
+        self.sum_error   = self.error_func(self.result, self.target)
 
-        print "Average Error : ",self.sum_error/len(self.results)
+        print "Test    cases : ", len(self.result)
+        print "Sum     Error : ", self.sum_error
+        print "Average Error : ",self.sum_error/len(self.result)
         
         
+    def compare(self):
+        """
+        compare results and targets
+        """
+
+        for i in xrange(len(self.dataset)):
+            print "Case "+str(i)+" : ",
+            print "- input : ", self.input[i]
+            print "- target: ", self.target[i]
+            print "- result: ", self.result[i]
+            print "- error : ", self.target[i]-self.result[i]
+            print ""
+
