@@ -16,29 +16,6 @@ def read_dataset_csv(dataset_file):
     return DataSet(pd.read_csv(dataset_file))
 
 
-def read_supervised_list(dataset_list):
-    """
-    pass plain list to DataSet
-    each element of list should be [[input], [target]]
-    """
-
-    # normalize them first
-    nlst = []
-    for p, q in dataset_list:
-        nelem = p + q
-        nlst.append(nelem)
-
-    # create dataset and columns
-    ds = DataSet(nlst)
-
-    input_cnt = len(dataset_list[0][0])
-    all_cnt = input_cnt + len(dataset_list[0][1])
-    target_columns = [i for i in xrange(input_cnt, all_cnt)]
-    
-    ds.set_target(target_columns)
-
-    return ds
-
 
 class DataSet:
 
@@ -49,50 +26,167 @@ class DataSet:
     basic structure. Both supervised dataset and unsupervised dataset can use this 
     class as a container. 
     
+    special input format:
+    0) [[variables]]*cases
+    1) [[input], [target]]*cases
+    2) [inputs, targets]
+
     """
 
-    def __init__(self, dataset, bias=False):
+    def __init__(self, dataset, bias=False, format=0):
 
         """
         Parameter description
         dataset is raw panda DataFrame or plain list which can be interpreted by DataFrame
         input and target will both be a numpy array
         targets should be set when dataset is used in supervised training by set_target
-        """
-        
-        self.dataset   = DataFrame(dataset)
-        self.bias      = bias
-        
-        # add constant bias to dataset as a variables
 
-        if self.bias == True:
-            bias_array = DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
-            self.dataset = self.dataset.join(bias_array)
+        """
+
+        # dataset pandas container
+        self.dataset        = None
+        self.input_dataset  = None
+        self.target_dataset = None
+
+        # numpy array container
+        self.input          = None
+        self.target         = None
+
+        # input and target counts
+        self.ni             = 0
+        self.nt             = 0
+
+        # supervise or unsupervise
+        self.supervise      = False 
+
+        # bias
+        self.bias           = bias
 
         # index list for variables and targets
-        # all dataset will be set as variable initially
+        self.vlst    = []
+        self.ilst    = []
+        self.tlst    = [] 
 
-        self.vlst      = self.dataset.columns.tolist()
-        self.ilst      = self.dataset.columns.tolist()
-        self.tlst      = []
-
-        # initially all variables in dataset will be set as input variables
-
-        self.input_dataset = self.dataset[self.ilst]
-        self.target_dataset = self.dataset[self.tlst]
+        # initialization
+        if format == 0:
 
 
-        self.input  = self.dataset.values
-        self.target = None
+            self.dataset   = DataFrame(dataset)
+        
+            # add constant bias to dataset as a variables
 
-        # number of variables and targets
+            if self.bias == True:
+                bias_array = DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
+                self.dataset = self.dataset.join(bias_array)
 
-        self.ni        = len(self.ilst)
-        self.nt        = len(self.tlst)
+            # index list for variables and targets
+            # all dataset will be set as variable initially
 
-        # supervise flag will set to be true when set_target is executed
+            self.vlst      = self.dataset.columns.tolist()
+            self.ilst      = self.dataset.columns.tolist()
+            self.tlst      = []
 
-        self.supervise = False
+            # initially all variables in dataset will be set as input variables
+
+            self.input_dataset = self.dataset[self.ilst]
+            self.target_dataset = self.dataset[self.tlst]
+
+
+            self.input  = self.dataset.values
+            self.target = None
+
+            # number of variables and targets
+
+            self.ni        = len(self.ilst)
+            self.nt        = len(self.tlst)
+
+            # supervise flag will set to be true when set_target is executed
+
+            self.supervise = False
+
+
+        elif format == 1:
+
+            # [[input], [target] * cases
+
+            # preprocess: combine input and target first
+
+            nlst = []
+            for p, q in dataset:
+                nelem = p + q
+                nlst.append(nelem)
+
+
+            # create dataset and columns
+
+            self.dataset = DataFrame(nlst)
+            self.vlst    = [i for i in xrange(0, all_cnt)]
+
+            input_dim = len(dataset[0][0])
+            all_dim   = input_dim + len(dataset[0][1])
+            target_columns = [i for i in xrange(input_dim, all_dim)]
+
+            self.vlst    = [i for i in xrange(0, all_cnt)]
+
+
+            # add constant bias to dataset as a variables
+
+            if self.bias == True:
+                bias_array = DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
+                self.dataset = self.dataset.join(bias_array)
+                self.vlst.append("Bias")
+                target_columns.append("Bias")
+
+
+            # set targets
+
+            self.set_target(target_columns)
+
+        elif format==2:
+
+            # [inputs, targets]
+
+            self.input_dataset   = DataFrame(dataset[0])
+            self.target_dataset  = DataFrame(dataset[1])
+
+            # add bias
+
+            if self.bias == True:
+                bias_array = DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
+                self.input_dataset = self.input_dataset.join(bias_array)
+
+            # recalculate columns names to prevent collision
+            self.ilst      = ["Input_"]*self.input_dataset.shape[0]
+            self.tlst      = ["Target_"]*self.target_dataset.shape[0]
+
+            for i, v in enumerate(self.input_dataset.columns):
+                self.ilst[i] += str(v)
+
+            for i, v in enumerate(self.target_dataset.columns):
+                self.tlst[i] += str(v)
+
+            # reset columns name
+
+            self.input_dataset.columns  = self.ilst
+            self.target_dataset.columns = self.tlst
+
+            # normal information
+
+            self.dataset = pd.concat(self.input_dataset, self.target_dataset)
+            self.vlst = self.ilst + self.tlst
+
+            self.ni   = len(self.ilst)
+            self.nt   = len(self.tlst)
+
+            self.input  = self.input_dataest.values
+            self.target = self.target_dataset.values
+
+            self.supervise = True            
+
+        else:
+            return
+
+
 
     def __len__(self):
         
@@ -421,7 +515,11 @@ class DataSet:
 
         return rlst
 
-
+    def save_dataset(self, filename):
+        """
+        TODO
+        """
+        w = open(filename, "w")
 
 
         
