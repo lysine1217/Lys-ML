@@ -1,37 +1,39 @@
 # -*- coding: utf-8 -*-
 
 """
-sentence
+Document
 """
 
 from lyspy.lexical.tokenize import tokenize
-from lyspy.lexical.tokenize import Vocabulary
+from lyspy.structure.vocabulary import Vocabulary
 
 
-class Sentence:
+class Document:
 
     """
-    Sentence defines sentence structures, this will be a container for any nlp processing
+    Document defines document structures, this will be a container for any nlp processing
 
     Essential features:
-    - Sentence.raw
-    - Sentence.words
+    - Document.raw
+    - Document.words
     
     Optional features (will be implemented in the feature)
-    - Sentence.postag
-    - Sentence.parse
-    - Sentence.dependency
+    - Document.postag
+    - Document.parse
+    - Document.dependency
     """
 
     def __init__(self, string_or_listofstrings):
 
-        if isinstance(string_or_listofstring, string):
+
+        if isinstance(string_or_listofstrings, string):
             self.raw   = string_or_listofstring
             self.words = tokenize(self.raw)
 
         else:
-            self.raw   = " ".join(string_or_listofstring)
-            self.words = tokenize(self.raw)
+
+            self.raw   = " ".join(string_or_listofstrings)
+            self.words = strin_or_listofstrings
 
         self.pos   = None
         self.tree  = None
@@ -57,7 +59,7 @@ class Sentence:
         """
 
         if self.dex!=None:
-            
+            return 
         
         self.dex = []
 
