@@ -9,7 +9,7 @@ import numpy as np
 # lyspy library
 from lyspy.lexical.tokenize import tokenize
 from lyspy.structure.vocabulary import Vocabulary
-from lyspy.structure.document import Document
+from lyspy.structure.sentence import Sentence
 
 class TFIDF:
 
@@ -39,7 +39,7 @@ class TFIDF:
 
         """
 
-        self.rdocs = [Document(rdoc) for rdoc in rdocs]
+        self.rdocs = [Sentence(rdoc) for rdoc in rdocs]
         self.nd     = len(self.rdocs)
 
         # use set to calculate how many documents contains each word
@@ -59,7 +59,7 @@ class TFIDF:
 
         # easy approximation of idf
         
-        self.rdocs = Document(rdocs)
+        self.rdocs = Sentence(rdocs)
         for word in self.rdocs.words:
             self.idf[word] += 1
 
@@ -72,7 +72,7 @@ class TFIDF:
         doc should be a document
         """
 
-        self.doc = Document(doc)
+        self.doc = Sentence(doc)
 
         for word in self.doc.words:
             # calcuate frequency for each word
