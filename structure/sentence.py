@@ -1,39 +1,41 @@
 # -*- coding: utf-8 -*-
 
 """
-Document
+Sentence
 """
 
 from lyspy.lexical.tokenize import tokenize
 from lyspy.structure.vocabulary import Vocabulary
 
 
-class Document:
+class Sentence:
 
     """
-    Document defines document structures, this will be a container for any nlp processing
+    Sentence defines sentence structures, this will be a container for any nlp processing
 
     Essential features:
-    - Document.raw
-    - Document.words
+    - Sentence.raw
+    - Sentence.words
     
+    TODO:
     Optional features (will be implemented in the feature)
-    - Document.postag
-    - Document.parse
-    - Document.dependency
+    - Sentence.postag
+    - Sentence.parse
+    - Sentence.dependency
     """
 
-    def __init__(self, string_or_listofstrings):
+    def __init__(self, string_or_listofwords):
 
 
-        if isinstance(string_or_listofstrings, string):
-            self.raw   = string_or_listofstring
+        if isinstance(string_or_listofwords, str):
+            self.raw   = string_or_listofwords
             self.words = tokenize(self.raw)
 
         else:
 
-            self.raw   = " ".join(string_or_listofstrings)
-            self.words = strin_or_listofstrings
+            self.raw   = " ".join(string_or_listofwords)
+            self.words = string_or_listofwords
+
 
         self.pos   = None
         self.tree  = None
@@ -44,9 +46,15 @@ class Document:
 
         return self.raw
 
+    def __len__(self):
+        return len(self.words)
+
     def __getitem__(self, sth):
 
         return self.words[sth]
+
+    def __setitem__(self, sth, word):
+        self.words[sth] = word
 
 
     def index(self, v, remove_nomap_word = True):
@@ -71,6 +79,13 @@ class Document:
 
             self.dex.append(word_dex)
             
-        
+    def ngrams(self, n=2):
+        res = []
+        for i in xrange(len(self.words)-n+1):
+            n_ngram = []
+            for j in xrange(n):
+                n_ngram.append(self.words[i+j])
+            res.append(n_ngram)
 
-        
+        return res
+
