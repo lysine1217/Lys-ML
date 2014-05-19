@@ -90,6 +90,14 @@ class Vocabulary:
 
 
 
+    def get_vector(self, word):
+        if self.word2vec.has_key(word):
+            return self.word2vec[word]
+        else:
+            return -1
+
+
+
     def read_vectors(self, filepath=None):
 
         """

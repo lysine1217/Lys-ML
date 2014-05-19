@@ -28,9 +28,9 @@ class Test:
             self.test()
 
 
-    def test(self):
+    def test(self, binary=0):
 
-        self.result      = self.model.predict(self.dataset)
+        self.result      = self.model.predict(self.dataset, binary)
         self.sum_error   = self.error_func(self.result, self.target)
 
         print "Test    cases : ", len(self.result)

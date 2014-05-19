@@ -26,14 +26,15 @@ class LanguageModel:
     def __init__(self, ngram=2):
 
         self.ngram = 2
-        self.ngramdict = default(float)
-        self.unigramdict = default(int) 
+        self.ngramdict = defaultdict(float)
+        self.unigramdict = defaultdict(float) 
 
     def train(self, dataset):
         
         self.dataset   = Sentence(dataset)
-        for words in self.dataset.ngram(self.ngram):
-            self.ngramdict[words] += 1.0
+        for words in self.dataset.ngrams(self.ngram):
+            bigram = " ".join(words)
+            self.ngramdict[bigram] += 1.0
             self.unigramdict[words[0]] += 1.0
 
 
@@ -53,7 +54,9 @@ class LanguageModel:
         self.testdata = Sentence(dataset)
         self.res = 0.0
 
-        for u,v in self.testdata.ngram(self.ngram):
+        for wlst in self.testdata.ngrams(self.ngram):
+
+            words = " ".join(wlst)
 
             # constant values will be added if corresponding ngram is 0
             if self.ngramdict[words] == 0.0:
