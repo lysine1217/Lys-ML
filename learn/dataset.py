@@ -117,16 +117,18 @@ class DataSet:
                 nlst.append(nelem)
 
 
+
+            # count dimensions for input and target
+            input_dim   = len(dataset[0][0])
+            target_dim  = len(dataset[0][1])
+            all_dim     = input_dim + target_dim
+
             # create dataset and columns
 
             self.dataset = DataFrame(nlst)
-            self.vlst    = [i for i in xrange(0, all_cnt)]
+            self.vlst    = [i for i in xrange(0, all_dim)]
 
-            input_dim = len(dataset[0][0])
-            all_dim   = input_dim + len(dataset[0][1])
             target_columns = [i for i in xrange(input_dim, all_dim)]
-
-            self.vlst    = [i for i in xrange(0, all_cnt)]
 
 
             # add constant bias to dataset as a variables
