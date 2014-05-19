@@ -4,6 +4,7 @@
 Vocabulary
 """
 import os
+import heapq
 from collections import defaultdict
 import numpy as np
 
@@ -19,13 +20,17 @@ class Vocabulary:
     """    
 
     def __init__(self, v=None, stopwords=None):
-
         """
-        Set vocabularies and stopwords
+        Initialize vocabularies and stopwords
         """
 
+        # word index, vector, postag
         self.word2dex = dict()
         self.dex2word = dict()
+
+        self.word2vec = dict()
+        self.word2tag = dict()
+
         self.wordnum  = 0
 
         if v!= None:
@@ -48,6 +53,17 @@ class Vocabulary:
 
         self.wordcnt  = defaultdict(int)
         self.word2vec = dict()
+
+
+    def __len__(self):
+        """
+        return number of words in vocabulary
+        TODO:
+        - wordnum are not set currently
+
+        """
+        return self.wordnum
+
         
 
     def __getitem__(self, sth):
@@ -96,6 +112,11 @@ class Vocabulary:
         else:
             return -1
 
+    def get_postag(self, word):
+        if self.word2tag.has_key(word):
+            return self.word2tag[word]
+        else:
+            return "N"
 
 
     def read_vectors(self, filepath=None):
@@ -113,7 +134,25 @@ class Vocabulary:
             word = line[0]
             vec  = map(float, line[1:])
             self.word2vec[word] = vec
+
+
+        self.wordvec_pair = self.word2vec.items()
+
+    def read_postags(self, filepath=None):
+        """
+        Read default postags saved in data/en
+        """
+
+        if filepath==None:
+            filepath = os.path.join(os.path.dirname(lyspy.data.en.__file__), "postag.txt")
             
+        f = open(filepath, "r").readlines()
+        for line in f:
+            line = line.split()
+            if len(line)>=2:
+                word = line[0]
+                tag  = line[1]
+                self.word2tag[word] = tag
 
     def read_vocabulary(self, filepath=None):
         
@@ -127,7 +166,7 @@ class Vocabulary:
         f = map(str.strip(), open(filepath, "r").readlines())
         self.set_vocabulary(f)
 
-    def find_nearest_word(self, val):
+    def find_nearest_word(self, val, tag=None):
         """
         return the word that has the nearest vector with "val"
         """
@@ -136,13 +175,42 @@ class Vocabulary:
         min_distance = 100000000.0
 
         for word, vec in self.word2vec.items():
-            distance = np.linalg.norm(vec-val)
-            if distance < min_distance:
-                min_word = word
-                min_distance = distance
+            # check whether postag of word is startswith tag
+            if tag == None or self.get_postag(word).startswith(tag):
+                distance = np.linalg.norm(vec-val)
+                if distance < min_distance:
+                    min_word = word
+                    min_distance = distance
 
         return min_word
 
+    def find_nearest_words(self, val, k, tag=None):
+        """
+        return top k (word, similarity) that has the nearset vector with val
+        similarity is cosine similarity
+
+        """
+
+        min_words     = [""]*k
+        min_distance  = [10000000000.0]*k
+
+        for word, vec in self.wordvec_pair:
+
+            if tag == None or self.get_postag(word).startswith(tag):
+
+                distance = np.linalg.norm(vec-val)
+                if distance < min_distance[0]:
+                    min_distance[0] = distance
+                    min_words[0]    = word
+
+                    # swap sort
+                    for i in xrange(k-1):
+                        if min_distance[i] < min_distance[i+1]:
+                            min_distance[i], min_distance[i+1] = min_distance[i+1], min_distance[i]
+                            min_words[i], min_words[i+1] = min_words[i+1], min_words[i]
+
+
+        return min_words, min_distance
 
         
     def process(self, doc, cap=0):
