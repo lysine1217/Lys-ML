@@ -82,9 +82,9 @@ class Vocabulary:
             if sth in self.dex2word:
                 return self.dex2word[sth]
             else:
-                return False
+                return -1
         else:
-            return False
+            return -1
 
 
     def set_vocabulary(self, v):
@@ -161,9 +161,9 @@ class Vocabulary:
         """
 
         if filepath==None:
-            filepath = os.path.join(os.path.dirname(lyspy.data.en__file__), "top1000_nostop.txt")
+            filepath = os.path.join(os.path.dirname(lyspy.data.en.__file__), "long_frequent_words")
 
-        f = map(str.strip(), open(filepath, "r").readlines())
+        f = map(str.strip, open(filepath, "r").readlines())
         self.set_vocabulary(f)
 
     def find_nearest_word(self, val, tag=None):
@@ -211,6 +211,23 @@ class Vocabulary:
 
 
         return min_words, min_distance
+
+    def find_nearest_order(self, val, word):
+        """
+        return the distance order between val and vector of word
+        """
+
+        distance = np.linalg.norm(val-self.word2vec[word])
+        cnt      = 0
+
+        for vec in self.word2vec.values():
+            n_distance = np.linalg.norm(vec-val)
+            if n_distance < distance:
+                cnt += 1
+
+        return cnt
+        
+
 
         
     def process(self, doc, cap=0):
