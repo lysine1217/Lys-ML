@@ -88,22 +88,19 @@ class NeuralNetwork:
         self.pdi = self.di
         
 
-        # debug
-        # print "New Back"
-        # print self.eo
-        # print self.eh #eh is wrong ?!
-        
-        
+    def test(self, dataset, detail=1):
 
-        
+        """
+        It is recommended to do more concise test with Test module
+        This is a just easy test
+        """
 
-    def test(self, patterns, resOnly=0):
-        for p in patterns:
-            self.update(p[0])
-            if(resOnly==0):
-                print(p[0], '->', self.vo, 'Target :', p[1])
+        for i in xrange(len(dataset)):
+            self.update(dataset.input[i])
+            if(detail==1):
+                print(dataset.input[i], '->', self.vo, 'Target :', dataset.target[i])
             else:
-                print self.vo,p[1]
+                print self.vo, dataset.target[i]
 
     def multiclassTest(self, patterns):
 
@@ -142,129 +139,99 @@ class NeuralNetwork:
         print "Hidden Weights"
         print wh
 
-    def train(self, dataset, epoch=1000, rate=0.05, momentum=0.01):
+
+    def train(self, dataset, epoch=1000, each_epoch= 1000, rate=0.05, momentum=0.01, rate_decay=False):
+
+        """
+        Stochastic Gradient Descent training
+
+        """
+
+        # decrease learning rate every epoch if rate_decay is setting true
+        rate_decrease = rate / epoch
+        momentum_decrease = momentum / epoch
 
         for i in xrange(epoch):
 
             error = 0.0
 
-            for j in xrange(1000):
+            for j in xrange(each_epoch):
+
+                # stochastic selection
                 dex = np.random.randint(0, len(dataset))
                 inputs  = dataset.input[dex]
                 targets = dataset.target[dex]
+
+                # train for new case
                 self.update(inputs)
                 self.backPropagate(targets, rate, momentum)
+
                 error = error + self.so
 
+            # calculate RMS error
+            error = np.sqrt(error/each_epoch)
+
+            # update learning and momentum rate
+            if rate_decay == True:
+                rate -= rate_decrease
+                momentum -= momentum_decrease
+            
+            # stop if error is small enough
             if error < 0.00001 :
                 print "Converge !"
                 break
 
             print i," epoch error %.6f" % error
 
-    
-    def stochasticGradientDescent(self, patterns, iterations=1000, rate=0.05,momentum=0.01):
-        for i in xrange(iterations):
-            error = 0.0
-            for p in xrange(1000):
-                ndex = int(np.random.random()*len(patterns))
-                npat = patterns[ndex]
-                
-                inputs  = npat[0]
-                targets = npat[1]
-                
-                self.update(inputs)
-                self.backPropagate(targets,rate,momentum)
-                
-                error = error + self.so
 
-            if i%10 == 0:
-                print('error %-.5f' %error)
+    def predict(self, dataset, binary=0, threshold=0.5):
 
+        """
+        prediction using trained neural network
 
+        binary format:
+        
+        1) 0: normal case
+        2) 1: binarize all output with specified threshold
+        3) 2: set max value to 1.0 and others to 0.0
+        4) 3: set min value to 1.0 and others to 0.0
 
-    def predict(self, dataset, binary=0):
-
+        """
         res = []
         for i in xrange(len(dataset)):
+            
+            # calculate for new input
             self.update(dataset.input[i])
-            res.append(self.vo)
+
+            # case 1
+            if binary==1:
+                n_res = []
+                for j in xrange(len(self.vo)):
+                    if self.vo[j] > threshold:
+                        n_res.append(1.0)
+                    else:
+                        n_res.append(0.0)
+                res.append(n_res)
+
+            # case 2
+            elif binary==2:
+                n_res = [0.0]*len(self.vo)
+                max_v = np.argmax(self.vo)
+                n_res[max_v] = 1.0
+                res.append(n_res)
+
+            # case 3
+            elif binary==3:
+                n_res = [0.0]*len(self.vo)
+                min_v = np.argmin(self.vo)
+                n_res[min_v] = 1.0
+                res.append(n_res)
+
+            # normal case
+            else:
+                res.append(self.vo)
 
         return np.array(res)
-
-
-def demo():
-
-    pat = [
-        [[0,0], [0]],
-        [[0,1], [1]],
-        [[1,0], [1]],
-        [[1,1], [0]]
-    ]
-    
-    # create a network with two input, two hidden, and one output nodes
-    n = NeuralNetwork(2, 2, 1)
-    # train it with some patterns
-    n.train(pat)
-    # test it
-    n.test(pat)
-
-def main(argv):
-    
-    # Format for arguments
-    # 
-    # argv[1] : input file
-    # argv[2] : hidden number 
-    # argv[3] : iteration number
-    # argv[4] : test file
-    
-
-    # parse file into trainData
-
-    trainData = map(str.split,open(argv[1],"r").readlines())
-    if(len(trainData)<1):
-        raise ValueError("Text file is not long enough")
-
-    # pat contains training data 
-    # - pat[i][0] : input
-    # - pat[i][1] : output
-    pat = []
-    for line in trainData:
-        nline = map(float,line)
-        pat.append([nline[:-1],[nline[-1]]])
-
-    inputNum  = len(pat[0][0])
-    hiddenNum = int(argv[2])
-    outputNum = 1
-
-    # iterations setting        
-    iterationNum = 1000
-    
-    if(len(argv)>=4):
-        iterationNum = int(argv[3])
-
-    n = NeuralNetwork(inputNum,hiddenNum,outputNum)
-    #n.stochasticGradientDescent(pat, iterations=iterationNum)
-    n.train(pat,iterations=iterationNum)
-    n.test(pat)
-
-    if(len(argv)>=5):
-        testData = map(str.split,open(argv[4],"r").readlines())
-        testPat = []
-        for line in testData:
-            nline = map(float,line)
-            testPat.append(nline)
-            #testPat.append([nline[:-1],[nline[-1]]])
-
-        n.calculate(testPat)
-
-
-if __name__ == '__main__':
-
-    argv = sys.argv
-    main(argv)
-    
-
 
 
      
