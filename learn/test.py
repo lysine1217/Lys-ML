@@ -24,12 +24,6 @@ class Test:
         
         self.error_func = error_func
 
-        if self.model != None and self.dataset != None:
-            if error_func == class_errors:
-                self.test(binary=1)
-            else:
-                self.test()
-
 
     def test(self, binary=0):
 
@@ -39,6 +33,21 @@ class Test:
         print "Test    cases : ", len(self.result)
         print "Sum     Error : ", self.sum_error * len(self.result)
         print "Average Error : ", self.sum_error
+
+
+    def multiclass_test(self, binary=0):
+        
+        self.result    = self.model.predict(self.dataset, binary)
+        self.sum_error = self.error_func(self.result, self.target)
+
+        pos_count = len(self.result) - self.sum_error
+        neg_count = self.sum_error
+        
+
+        print "Test       cases : ", len(self.result)
+        print "Positive   cases : ", pos_count
+        print "Negative   cases : ", neg_count
+        print "Postive    rate  : ", pos_count * 1.0/ len(self.result)
         
         
     def compare(self, index=None):
