@@ -11,13 +11,13 @@ def square_errors(x_val, y_val):
 
 
 def class_errors(x_cls, y_cls):
-    res = 0.0
+    correct = 0.0
 
     for i in xrange(len(x_cls)):
-        if x_cls[i] != y_cls[i]:
-            res += 1
+        if np.array_equal(x_cls[i], y_cls[i]):
+            correct += 1
 
-    return res/len(x_cls)
+    return len(x_cls) - correct
         
 def hinge_errors(x_val, y_val):
     res = 0.0
