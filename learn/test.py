@@ -25,7 +25,10 @@ class Test:
         self.error_func = error_func
 
         if self.model != None and self.dataset != None:
-            self.test()
+            if error_func == class_errors:
+                self.test(binary=1)
+            else:
+                self.test()
 
 
     def test(self, binary=0):
@@ -34,20 +37,28 @@ class Test:
         self.sum_error   = self.error_func(self.result, self.target)
 
         print "Test    cases : ", len(self.result)
-        print "Sum     Error : ", self.sum_error
-        print "Average Error : ",self.sum_error/len(self.result)
+        print "Sum     Error : ", self.sum_error * len(self.result)
+        print "Average Error : ", self.sum_error
         
         
-    def compare(self):
+    def compare(self, index=None):
         """
         compare results and targets
+        it is possible to check specific case by setting index
+
         """
 
-        for i in xrange(len(self.dataset)):
-            print "Case "+str(i)+" : ",
+        if index==None:
+            index = range(len(self.dataset))
+        elif isinstance(index, int):
+            index = [index]
+
+        for i in index:
+            print "Case "+str(i)+" : "
             print "- input : ", self.input[i]
             print "- target: ", self.target[i]
             print "- result: ", self.result[i]
             print "- error : ", self.target[i]-self.result[i]
             print ""
+
 

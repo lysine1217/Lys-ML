@@ -117,16 +117,18 @@ class DataSet:
                 nlst.append(nelem)
 
 
+
+            # count dimensions for input and target
+            input_dim   = len(dataset[0][0])
+            target_dim  = len(dataset[0][1])
+            all_dim     = input_dim + target_dim
+
             # create dataset and columns
 
             self.dataset = DataFrame(nlst)
-            self.vlst    = [i for i in xrange(0, all_cnt)]
+            self.vlst    = [i for i in xrange(0, all_dim)]
 
-            input_dim = len(dataset[0][0])
-            all_dim   = input_dim + len(dataset[0][1])
             target_columns = [i for i in xrange(input_dim, all_dim)]
-
-            self.vlst    = [i for i in xrange(0, all_cnt)]
 
 
             # add constant bias to dataset as a variables
@@ -347,7 +349,7 @@ class DataSet:
         """
         Tranform factors into 1-to-n encodings,
         for examples, ["male", "female"] will be transform to [[1,0],[0,1]]
-        if factors is None, n will be numbers of all possible factors
+        if factors are None, n will be numbers of all possible factors
         """
 
         factor_cnt = 0
@@ -436,7 +438,7 @@ class DataSet:
         self.input  = self.input_dataset.values
         self.target = self.target_dataset.values
 
-    def split(self, prop=[0.8, 0.2, 0.0], shuffle=True):
+    def split(self, ratio=[0.8, 0.2, 0.0], shuffle=True):
 
         """
         Split data into three(two) parts
@@ -454,9 +456,9 @@ class DataSet:
 
         # split all dataset into three cases
 
-        train_threshold    = prop[0]
-        validate_threshold = prop[0] + prop[1]
-        test_threshold     = prop[0] + prop[1] + prop[2]
+        train_threshold    = ratio[0]
+        validate_threshold = ratio[0] + ratio[1]
+        test_threshold     = ratio[0] + ratio[1] + ratio[2]
 
 
         train_lst    = []
