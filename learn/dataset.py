@@ -71,12 +71,12 @@ class DataSet:
         if format == 0:
 
 
-            self.dataset   = DataFrame(dataset)
+            self.dataset   = pd.DataFrame(dataset)
         
             # add constant bias to dataset as a variables
 
             if self.bias == True:
-                bias_array = DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
+                bias_array = pd.DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
                 self.dataset = self.dataset.join(bias_array)
 
             # index list for variables and targets
@@ -125,7 +125,7 @@ class DataSet:
 
             # create dataset and columns
 
-            self.dataset = DataFrame(nlst)
+            self.dataset = pd.DataFrame(nlst)
             self.vlst    = [i for i in xrange(0, all_dim)]
 
             target_columns = [i for i in xrange(input_dim, all_dim)]
@@ -134,7 +134,7 @@ class DataSet:
             # add constant bias to dataset as a variables
 
             if self.bias == True:
-                bias_array = DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
+                bias_array = pd.DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
                 self.dataset = self.dataset.join(bias_array)
                 self.vlst.append("Bias")
                 target_columns.append("Bias")
@@ -148,13 +148,13 @@ class DataSet:
 
             # [inputs, targets]
 
-            self.input_dataset   = DataFrame(dataset[0])
-            self.target_dataset  = DataFrame(dataset[1])
+            self.input_dataset   = pd.DataFrame(dataset[0])
+            self.target_dataset  = pd.DataFrame(dataset[1])
 
             # add bias
 
             if self.bias == True:
-                bias_array = DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
+                bias_array = pd.DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
                 self.input_dataset = self.input_dataset.join(bias_array)
 
             # recalculate columns names to prevent collision
@@ -333,7 +333,7 @@ class DataSet:
         Add bias to dataset
         """
 
-        bias_array = DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
+        bias_array = pd.DataFrame(np.ones(len(self.dataset)), columns=["Bias"])
         self.dataset = self.dataset.join(bias_array)
         self.vlst.append("Bias")
         self.ilst.append("Bias")
@@ -392,12 +392,18 @@ class DataSet:
 
         # create pandas dataframe and add dataset
     
-        factor_dataframe = DataFrame(flst, columns=clst)
+        factor_dataframe = pd.DataFrame(flst, columns=clst)
         self.add_dataset(factor_dataframe)
 
 
         
-    def normalize_linear_value(self, dex, max_value=None, min_value=None):
+    def normalize_minmax_value(self, dex, max_value=None, min_value=None):
+
+        """
+        scale all values to (-1, 1)
+
+        """
+
 
         if max_value == None:
             max_value = self.dataset[dex].max()
@@ -409,6 +415,15 @@ class DataSet:
         diff_value = max_value - min_value
 
         self.dataset[dex] = (self.dataset[dex] - mean_value)/diff_value
+
+
+    def normalize_affine_value(self, dex, multi_value=1.0, bias_value=0.0):
+        """
+        transfrom all value to a*v+b
+        """
+
+        self.dataset[dex] = (self.dataset[dex]*multi_value)+bias_value
+
 
         
     def normalize_gauss_value(self, dex, mean_value=None, dev_value=None):
