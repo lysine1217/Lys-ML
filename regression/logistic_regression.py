@@ -69,30 +69,12 @@ class LogisticRegression:
                 t = dataset.target[dex]
 
                 r = self.calculate(v)
-                self.wi -= rate*(t-r)*v
-                error += (r-v)**2
+                self.wi -= rate*(r-t)*v
+                error += np.sum((r-t)**2)
         
-            print error
+            print "Error: ", error
 
-            
-    
-#     def stochasticGradientDescent(self, dataset, rate=0.05, iterations=10000):
-
-#         error = 0.0
-
-#         for i in xrange(iterations):
-#             ind = np.random.randint(0, len(dataset))
-#             data = dataset[ind]
-#             x = np.array(data[0]+[1.0])
-#             t = data[1]
-#             r = self.calculate(x)
-#             self.wi -= rate*(r-t)*x
-#             error += np.abs(t-r)
-
-#             if(i%100==0):
-#                 print "error: %.6f" % error
-#                 error = 0.0
-
+                
 
 
     def predict(self, dataset, binary=1, offset=0.5):
