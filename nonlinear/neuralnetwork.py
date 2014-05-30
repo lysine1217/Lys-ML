@@ -56,6 +56,9 @@ class NeuralNetwork:
         # square error for output
         self.so = 0.0
 
+        # rms error list
+        self.rms = []
+
 
     def update(self, inputs):
                 
@@ -170,6 +173,7 @@ class NeuralNetwork:
 
             # calculate RMS error
             error = np.sqrt(error/each_epoch)
+            self.rms.append(error)
 
             # update learning and momentum rate
             if rate_decay == True:
