@@ -171,20 +171,67 @@ class Vocabulary:
         return the word that has the nearest vector with "val"
         """
 
+        max_word     = ""
+        max_distance = -100000000.0
+
+        for word, vec in self.word2vec.items():
+            # check whether postag of word is startswith tag
+            if tag == None or self.get_postag(word).startswith(tag):
+                distance = np.dot(vec, val)
+                if distance > max_distance:
+                    max_word = word
+                    max_distance = distance
+
+        return max_word
+
+    def find_nearest_euclid_word(self, val, tag=None):
+
         min_word     = ""
         min_distance = 100000000.0
 
         for word, vec in self.word2vec.items():
             # check whether postag of word is startswith tag
             if tag == None or self.get_postag(word).startswith(tag):
-                distance = np.linalg.norm(vec-val)
+                v = np.array(vec) - np.array(val)
+                distance = np.linalg.norm(v)
                 if distance < min_distance:
                     min_word = word
                     min_distance = distance
 
         return min_word
 
+
     def find_nearest_words(self, val, k, tag=None):
+        """
+        return top k (word, similarity) that has the nearset vector with val
+        similarity is cosine similarity
+
+        """
+
+        max_words     = [""]*k
+        max_distance  = [-10000000000.0]*k
+
+        for word, vec in self.word2vec.items():
+
+            if tag == None or self.get_postag(word).startswith(tag):
+
+                distance = np.dot(vec, val)
+                if distance > max_distance[0]:
+
+                    max_distance[0] = distance
+                    max_words[0]    = word
+
+                    # swap sort
+                    for i in xrange(k-1):
+                        if max_distance[i] > max_distance[i+1]:
+                            max_distance[i], max_distance[i+1] = max_distance[i+1], max_distance[i]
+                            max_words[i], max_words[i+1] = max_words[i+1], max_words[i]
+
+
+        return max_words, max_distance
+
+    def find_nearest_euclid_words(self, val, k, tag=None):
+
         """
         return top k (word, similarity) that has the nearset vector with val
         similarity is cosine similarity
@@ -194,12 +241,14 @@ class Vocabulary:
         min_words     = [""]*k
         min_distance  = [10000000000.0]*k
 
-        for word, vec in self.wordvec_pair:
+        for word, vec in self.word2vec.items():
 
             if tag == None or self.get_postag(word).startswith(tag):
+                v = np.array(vec) - np.array(val)
 
-                distance = np.linalg.norm(vec-val)
+                distance = np.linalg.norm(v)
                 if distance < min_distance[0]:
+
                     min_distance[0] = distance
                     min_words[0]    = word
 
@@ -209,24 +258,42 @@ class Vocabulary:
                             min_distance[i], min_distance[i+1] = min_distance[i+1], min_distance[i]
                             min_words[i], min_words[i+1] = min_words[i+1], min_words[i]
 
-
         return min_words, min_distance
+
+        
+
+
 
     def find_nearest_order(self, val, word):
         """
         return the distance order between val and vector of word
         """
 
-        distance = np.linalg.norm(val-self.word2vec[word])
+        distance = np.dot(val, self.word2vec[word])
         cnt      = 0
 
         for vec in self.word2vec.values():
-            n_distance = np.linalg.norm(vec-val)
+            n_distance = np.dot(vec, val)
+            if n_distance > distance:
+                cnt += 1
+
+        return cnt
+
+    def find_nearest_euclid_order(self, val, word):
+        """
+        return the distance order between val and vector of word
+        """
+
+        distance = np.linalg.norm(val - self.word2vec[word])
+        cnt      = 0
+
+        for vec in self.word2vec.values():
+            v = np.array(vec) - np.array(val)
+            n_distance = np.linalg.norm(v)
             if n_distance < distance:
                 cnt += 1
 
         return cnt
-        
 
 
         
