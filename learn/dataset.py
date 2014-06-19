@@ -26,20 +26,28 @@ class DataSet:
     basic structure. Both supervised dataset and unsupervised dataset can use this 
     class as a container. 
     
-    special input format:
-    0) [[variables]]*cases
-    1) [[input], [target]]*cases
-    2) [inputs, targets]
 
     """
 
     def __init__(self, dataset, bias=False, format=0):
 
         """
-        Parameter description
+        Initialize the DataSet
+        
         dataset is raw panda DataFrame or plain list which can be interpreted by DataFrame
         input and target will both be a numpy array
         targets should be set when dataset is used in supervised training by set_target
+
+        Args:
+        
+        dataset: list or panda's dataframe
+        bias: add a constant bias to dataset
+        format: 0 to 2 are available. detailed format are followings.
+
+        0) [[variables]]*cases
+        1) [[input], [target]]*cases
+        2) [inputs, targets]
+
 
         """
 
@@ -91,6 +99,7 @@ class DataSet:
             self.input_dataset = self.dataset[self.ilst]
             self.target_dataset = self.dataset[self.tlst]
 
+            # input and target are generated from DataFrame to boost speed of processing
 
             self.input  = self.dataset.values
             self.target = None
@@ -428,6 +437,8 @@ class DataSet:
             if dex in self.tlst:
                 self.tlst.remove(dex)
 
+            
+
                 
         # transform factors into list
         
@@ -589,9 +600,9 @@ class DataSet:
         validate_dataset.set_input(self.ilst)
         test_dataset.set_input(self.ilst)
 
-        train_dataset.set_target(self.tlst)
-        validate_dataset.set_target(self.tlst)
-        test_dataset.set_target(self.tlst)
+        train_dataset.set_target(self.tlst, False)
+        validate_dataset.set_target(self.tlst, False)
+        test_dataset.set_target(self.tlst, False)
 
         return train_dataset, validate_dataset, test_dataset
 
