@@ -282,6 +282,42 @@ class DataSet:
         self.supervise = True
 
 
+    def set_target_startswith(self, prefix, setinput=True):
+        """
+        set target by prefix
+        index whose prefix matches with the argument will be set as target
+        """
+
+        tlst = [dex for dex in self.vlst if isinstance(dex, str) and dex.startswith(prefix)]
+        self.set_target(tlst, setinput)
+
+
+    def set_target_endswith(self, suffix, setinput=True):
+        """
+        set target by suffix
+        """
+
+        tlst = [dex for dex in self.vlst if isinstance(dex, str) and dex.endswith(suffix)]
+        self.set_target(tlst, setinput)
+
+    
+    def set_input_startswith(self, prefix):
+        """
+        set input variables by prefix
+        """
+                
+        ilst = [dex for dex in self.vlst if isinstance(dex, str) and dex.startswith(prefix)]
+        self.set_input(ilst)
+
+    def set_input_endswith(self, suffix):
+        """
+        set input variables by suffix
+        """
+
+        ilst = [dex for dex in self.vlst if isinstance(dex, str) and dex.endswith(suffix)]
+        self.set_input(ilst)
+
+
     def set_input(self, dex):
 
         if isinstance(dex, list):
@@ -343,6 +379,20 @@ class DataSet:
         self.ni = len(self.ilst)
 
 
+    def clear_target(self):
+        """
+        clear fields of targets
+
+        """
+
+        self.input_dataset  = self.dataset
+        self.target_dataset = None
+
+        self.input  = self.dataset.values
+        self.target = None
+
+        self.supervise = False
+
 
 
     def normalize_factor(self, dex, factors=None, remove_prev_factor=True):
@@ -368,12 +418,16 @@ class DataSet:
             for i,v in enumerate(factors):
                 fdict[v] = i
 
+
         # remove previous factors
         if remove_prev_factor:
             if dex in self.vlst:
                 self.vlst.remove(dex)
             if dex in self.ilst:
                 self.ilst.remove(dex)
+            if dex in self.tlst:
+                self.tlst.remove(dex)
+
                 
         # transform factors into list
         
@@ -414,7 +468,15 @@ class DataSet:
         mean_value = (max_value + min_value)/2.0
         diff_value = max_value - min_value
 
-        self.dataset[dex] = (self.dataset[dex] - mean_value)/diff_value
+
+        # update dataset
+        self.dataset[dex]   = (self.dataset[dex] - mean_value)/diff_value
+        self.input_dataset  = self.dataset[self.ilst]
+        self.target_dataset = self.dataset[self.tlst]
+
+        # update matrix
+        self.input   = self.input_dataset.values
+        self.target  = self.target_dataset.values
 
 
     def normalize_affine_value(self, dex, multi_value=1.0, bias_value=0.0):
@@ -422,8 +484,14 @@ class DataSet:
         transfrom all value to a*v+b
         """
 
-        self.dataset[dex] = (self.dataset[dex]*multi_value)+bias_value
+        # update dataset
+        self.dataset[dex]   = (self.dataset[dex]*multi_value)+bias_value
+        self.input_dataset  = self.dataset[self.ilst]
+        self.target_dataset = self.dataset[self.tlst]
 
+        # update matrix
+        self.input   = self.input_dataset.values
+        self.target  = self.target_dataset.values
 
         
     def normalize_gauss_value(self, dex, mean_value=None, dev_value=None):
@@ -434,13 +502,28 @@ class DataSet:
         if dev_value == None:
             dev_value = self.dataset[dex].std()
 
+        
+        # update dataset
         self.dataset[dex] = (self.dataset[dex] - mean_value)/dev_value
+        self.input_dataset  = self.dataset[self.ilst]
+        self.target_dataset = self.dataset[self.tlst]
+
+        # update matrix
+        self.input   = self.input_dataset.values
+        self.target  = self.target_dataset.values
+
 
 
     def normalize_boolean(self, dex):
-        
-        self.dataset[dex] = self.dataset[dex].astype(float)
 
+        # update dataset
+        self.dataset[dex] = self.dataset[dex].astype(float)
+        self.input_dataset  = self.dataset[self.ilst]
+        self.target_dataset = self.dataset[self.tlst]
+
+        # update matrix
+        self.input   = self.input_dataset.values
+        self.target  = self.target_dataset.values
 
         
     def shuffle_cases(self):

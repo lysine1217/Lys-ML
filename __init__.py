@@ -5,6 +5,7 @@ import pandas as pd
 
 # import learning dataset
 
+from lyspy.learn.error_model import *
 from lyspy.learn.dataset import DataSet
 from lyspy.learn.test import Test
 from lyspy.learn.validate import Validate
